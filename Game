@@ -1,0 +1,94 @@
+import pygame, sys, random
+from pygame.locals import *
+
+pygame.init()
+mainClock = pygame.time.Clock()
+Window_height = 500
+Window_base = 500
+windowSurface = pygame.display.set_mode((Window_height, Window_base), 0, 32)
+
+WHITE = (255, 255, 255)
+RED = (255, 0, 0)
+GREEN = (0, 128, 0)
+BLUE = (0, 0, 255)
+BLACK = (0, 0, 0)
+
+player = pygame.Rect(300, 100, 40, 40)
+sheep = pygame.image.load('26a8550af8dc0208b3a4942be937f3f8.jpg')
+sheep = pygame.transform.scale(sheep, (40, 40))
+fireball = pygame.image.load('ball2.png')
+count = 0
+
+moveLeft = False
+moveRight = False
+moveUp = False
+moveDown = False
+
+MOVESPEED = 6
+movespeed = 6
+baddies = []
+fireballz = []
+
+
+while True:
+  for event in pygame.event.get():
+    if event.type == QUIT:
+      pygame.quit()
+      sys.exit()
+
+    if event.type == KEYDOWN:
+      if event.key == K_LEFT or event.key == K_a:
+        moveLeft = True
+      if event.key == K_RIGHT or event.key == K_d:
+        moveRight = True
+      if event.key == K_UP or event.key == K_w:
+        moveUp = True
+      if event.key == K_DOWN or event.key == K_s:
+        moveDown = True
+      
+    if event.type == KEYUP:
+      if event.key == K_ESCAPE:
+        pygame.quit() 
+        sys.exit()
+      if event.key == K_LEFT or event.key == K_a:
+        moveLeft = False
+      if event.key == K_RIGHT or event.key == K_d:
+        moveRight = False
+      if event.key == K_UP or event.key == K_w:
+        moveUp = False
+      if event.key == K_DOWN or event.key == K_s:
+        moveDown = False
+
+  if moveDown and player.bottom < Window_height:
+    player.top += MOVESPEED
+  if moveUp and player.top > 0:
+    player.top -= MOVESPEED
+  if moveLeft and player.left > 0:
+    player.left -= MOVESPEED
+  if moveRight and player.right < Window_base:
+    player.left += MOVESPEED
+
+  count += 1
+  
+  if count == 10:
+    count = 0
+
+    size = random.randint(10, 50)
+    baddies.append(pygame.Rect(random.randint(0, Window_base), 0, size, size))
+    fireballz.append(pygame.transform.scale(fireball,(size, size)))
+
+
+
+
+  windowSurface.fill(BLACK)
+  for i in range(len(baddies)):
+    windowSurface.blit(fireballz[i], baddies[i])
+    baddies[i].top += movespeed
+  windowSurface.blit(sheep, player)
+
+  for i in range(len(baddies)):
+    if player.colliderect(baddies[i]):
+      sys.exit()
+
+  pygame.display.update()
+  mainClock.tick(30)
